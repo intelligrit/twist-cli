@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	tokenFlag string
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "twist",
 	Short: "Twist CLI - Command line interface for Twist",
@@ -24,5 +28,6 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.PersistentFlags().StringVar(&tokenFlag, "token", "", "Twist API token (or set TWIST_API_TOKEN env var)")
 	rootCmd.AddCommand(workspacesCmd)
 }

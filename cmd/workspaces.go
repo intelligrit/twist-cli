@@ -21,7 +21,7 @@ var workspacesListCmd = &cobra.Command{
 	Short: "List all workspaces",
 	Long:  `List all workspaces that you have access to.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		token, err := auth.EnsureToken()
+		token, err := auth.GetToken(tokenFlag)
 		if err != nil {
 			return fmt.Errorf("authentication failed: %w", err)
 		}

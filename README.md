@@ -4,9 +4,9 @@ A command-line interface for interacting with the [Twist](https://twist.com) API
 
 ## Features
 
-- Personal access token authentication
+- Personal access token authentication via environment variable or flag
 - List workspaces
-- Secure token storage in `~/.config/twist/config.json`
+- No token storage - follows best practices like OpenAI and Anthropic CLIs
 
 ## Installation
 
@@ -24,14 +24,40 @@ cd twist-cli
 go build
 ```
 
-## Getting Your Twist API Token
+## Authentication
+
+### Getting Your Twist API Token
 
 1. Go to [https://twist.com/integrations](https://twist.com/integrations)
 2. Create a new integration or select an existing one
 3. Copy your personal access token from the OAuth section
-4. Run any `twist` command and you'll be prompted to enter your token
 
-Your token will be securely stored in `~/.config/twist/config.json` for future use.
+### Using Your Token
+
+You have three options to provide your token (in order of priority):
+
+**Option 1: Environment Variable (Recommended)**
+```bash
+export TWIST_API_TOKEN="your-token-here"
+twist workspaces list
+```
+
+**Option 2: Command Flag**
+```bash
+twist workspaces list --token "your-token-here"
+```
+
+**Option 3: Interactive Prompt**
+```bash
+twist workspaces list
+# You'll be prompted to enter your token (not saved)
+```
+
+For convenience, add the environment variable to your shell profile:
+```bash
+# ~/.bashrc or ~/.zshrc
+export TWIST_API_TOKEN="your-token-here"
+```
 
 ## Usage
 
@@ -68,28 +94,15 @@ Check the CLI version:
 twist --version
 ```
 
-## Configuration
-
-The CLI stores your configuration in `~/.config/twist/config.json`:
-
-```json
-{
-  "token": "your-api-token-here"
-}
-```
-
-You can manually edit this file if needed, or delete it to reset your authentication.
-
 ## Project Structure
 
 ```
 twist-cli/
 ├── cmd/              # Cobra command definitions
 ├── pkg/
-│   ├── api/         # Twist API client
-│   └── config/      # Configuration management
+│   └── api/         # Twist API client
 └── internal/
-    └── auth/        # Authentication helpers
+    └── auth/        # Token authentication
 ```
 
 ## Development

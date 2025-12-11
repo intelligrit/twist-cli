@@ -18,10 +18,6 @@ go.work
 twist-cli
 twist
 
-# Config files with tokens (for security)
-config.json
-.config/
-
 # Dependency directories
 vendor/
 
