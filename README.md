@@ -28,9 +28,13 @@ go build
 
 ### Getting Your Twist API Token
 
-1. Go to [https://twist.com/integrations](https://twist.com/integrations)
+1. Go to [https://twist.com/integrations](https://twist.com/integrations) (must be logged into Twist)
 2. Create a new integration or select an existing one
-3. Copy your personal access token from the OAuth section
+3. Click into your integration/app
+4. Navigate to the **OAuth** section
+5. Find and copy the **Test Token** (this is your personal access token for testing)
+
+**Note:** The test token has full scope access for the logged-in user and is perfect for CLI usage. For production OAuth applications, you would implement the full OAuth 2.0 flow instead.
 
 ### Using Your Token
 

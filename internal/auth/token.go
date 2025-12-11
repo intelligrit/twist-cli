@@ -18,7 +18,9 @@ func PromptForToken() (string, error) {
 	fmt.Fprintln(os.Stderr, "To get your personal access token:")
 	fmt.Fprintln(os.Stderr, "  - Go to https://twist.com/integrations")
 	fmt.Fprintln(os.Stderr, "  - Create a new integration or select an existing one")
-	fmt.Fprintln(os.Stderr, "  - Copy your personal access token from the OAuth section")
+	fmt.Fprintln(os.Stderr, "  - Click into your integration/app")
+	fmt.Fprintln(os.Stderr, "  - Navigate to the OAuth section")
+	fmt.Fprintln(os.Stderr, "  - Copy the Test Token")
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprint(os.Stderr, "Enter your Twist API token: ")
 
