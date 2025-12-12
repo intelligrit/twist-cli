@@ -77,10 +77,57 @@ func (c *Client) GetComments(threadID int) ([]Comment, error) {
 	return comments, nil
 }
 
-func (c *Client) PostComment(threadID int, content string) (*Comment, error) {
+func (c *Client) CreateThread(channelID int, title, content string, recipients []int) (*Thread, error) {
+	payload := map[string]interface{}{
+		"channel_id": channelID,
+		"title":      title,
+		"content":    content,
+	}
+
+	if len(recipients) > 0 {
+		payload["recipients"] = recipients
+	}
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal thread data: %w", err)
+	}
+
+	url := BaseURL + "/threads/add"
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+c.token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("API request failed with status %d", resp.StatusCode)
+	}
+
+	var thread Thread
+	if err := json.NewDecoder(resp.Body).Decode(&thread); err != nil {
+		return nil, fmt.Errorf("failed to parse thread response: %w", err)
+	}
+
+	return &thread, nil
+}
+
+func (c *Client) PostComment(threadID int, content string, recipients []int) (*Comment, error) {
 	payload := map[string]interface{}{
 		"thread_id": threadID,
 		"content":   content,
+	}
+
+	if len(recipients) > 0 {
+		payload["recipients"] = recipients
 	}
 
 	jsonData, err := json.Marshal(payload)

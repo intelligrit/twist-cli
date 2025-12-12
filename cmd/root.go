@@ -31,4 +31,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&tokenFlag, "token", "", "Twist API token (or set TWIST_API_TOKEN env var)")
 	rootCmd.AddCommand(workspacesCmd)
 	rootCmd.AddCommand(threadsCmd)
+	rootCmd.AddCommand(conversationsCmd)
+	rootCmd.AddCommand(usersCmd)
 }

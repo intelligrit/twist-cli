@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"text/tabwriter"
 	"time"
 
 	"github.com/robertmeta/twist-cli/internal/auth"
 	"github.com/robertmeta/twist-cli/pkg/api"
 	"github.com/spf13/cobra"
+)
+
+var (
+	createNotifyFlag string
+	replyNotifyFlag  string
 )
 
 var threadsCmd = &cobra.Command{
@@ -120,7 +126,7 @@ var threadsShowCmd = &cobra.Command{
 var threadsReplyCmd = &cobra.Command{
 	Use:   "reply [thread-id] [message]",
 	Short: "Reply to a thread",
-	Long:  `Post a comment/reply to an existing thread.`,
+	Long:  `Post a comment/reply to an existing thread. Use --notify to specify user IDs to notify (comma-separated).`,
 	Args:  cobra.MinimumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		threadID, err := strconv.Atoi(args[0])
@@ -128,32 +134,101 @@ var threadsReplyCmd = &cobra.Command{
 			return fmt.Errorf("invalid thread ID: %w", err)
 		}
 
-		content := ""
-		for i := 1; i < len(args); i++ {
-			if i > 1 {
-				content += " "
-			}
-			content += args[i]
-		}
+		content := strings.Join(args[1:], " ")
 
 		token, err := auth.GetToken(tokenFlag)
 		if err != nil {
 			return fmt.Errorf("authentication failed: %w", err)
 		}
 
+		var recipients []int
+		if replyNotifyFlag != "" {
+			userIDs := strings.Split(replyNotifyFlag, ",")
+			for _, idStr := range userIDs {
+				idStr = strings.TrimSpace(idStr)
+				if idStr == "" {
+					continue
+				}
+				id, err := strconv.Atoi(idStr)
+				if err != nil {
+					return fmt.Errorf("invalid user ID: %s", idStr)
+				}
+				recipients = append(recipients, id)
+			}
+		}
+
 		client := api.NewClient(token)
-		comment, err := client.PostComment(threadID, content)
+		comment, err := client.PostComment(threadID, content, recipients)
 		if err != nil {
 			return fmt.Errorf("failed to post reply: %w", err)
 		}
 
 		fmt.Printf("Reply posted successfully (comment #%d)\n", comment.ID)
+		if len(recipients) > 0 {
+			fmt.Printf("Notified %d user(s)\n", len(recipients))
+		}
+		return nil
+	},
+}
+
+var threadsCreateCmd = &cobra.Command{
+	Use:   "create [channel-id] [title] [content]",
+	Short: "Create a new thread",
+	Long:  `Create a new thread in a channel. Use --notify to specify user IDs to notify (comma-separated).`,
+	Args:  cobra.MinimumNArgs(3),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		channelID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid channel ID: %w", err)
+		}
+
+		title := args[1]
+		content := strings.Join(args[2:], " ")
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		var recipients []int
+		if createNotifyFlag != "" {
+			userIDs := strings.Split(createNotifyFlag, ",")
+			for _, idStr := range userIDs {
+				idStr = strings.TrimSpace(idStr)
+				if idStr == "" {
+					continue
+				}
+				id, err := strconv.Atoi(idStr)
+				if err != nil {
+					return fmt.Errorf("invalid user ID: %s", idStr)
+				}
+				recipients = append(recipients, id)
+			}
+		}
+
+		client := api.NewClient(token)
+		thread, err := client.CreateThread(channelID, title, content, recipients)
+		if err != nil {
+			return fmt.Errorf("failed to create thread: %w", err)
+		}
+
+		fmt.Printf("Thread created successfully!\n")
+		fmt.Printf("Thread ID: %d\n", thread.ID)
+		fmt.Printf("Title: %s\n", thread.Title)
+		if len(recipients) > 0 {
+			fmt.Printf("Notified %d user(s)\n", len(recipients))
+		}
+
 		return nil
 	},
 }
 
 func init() {
+	threadsCreateCmd.Flags().StringVar(&createNotifyFlag, "notify", "", "Comma-separated user IDs to notify")
+	threadsReplyCmd.Flags().StringVar(&replyNotifyFlag, "notify", "", "Comma-separated user IDs to notify")
+
 	threadsCmd.AddCommand(threadsListCmd)
 	threadsCmd.AddCommand(threadsShowCmd)
 	threadsCmd.AddCommand(threadsReplyCmd)
+	threadsCmd.AddCommand(threadsCreateCmd)
 }
