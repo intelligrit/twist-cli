@@ -33,6 +33,7 @@ func init() {
 	rootCmd.AddCommand(channelsCmd)
 	rootCmd.AddCommand(threadsCmd)
 	rootCmd.AddCommand(commentsCmd)
+	rootCmd.AddCommand(reactionsCmd)
 	rootCmd.AddCommand(conversationsCmd)
 	rootCmd.AddCommand(usersCmd)
 }
