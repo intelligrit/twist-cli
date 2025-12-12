@@ -140,8 +140,170 @@ var conversationsSendCmd = &cobra.Command{
 	},
 }
 
+var conversationsArchiveCmd = &cobra.Command{
+	Use:   "archive [conversation-id]",
+	Short: "Archive a conversation",
+	Long:  `Archive a conversation to hide it from active lists.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		conversationID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid conversation ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.ArchiveConversation(conversationID); err != nil {
+			return fmt.Errorf("failed to archive conversation: %w", err)
+		}
+
+		fmt.Printf("Conversation %d archived successfully\n", conversationID)
+		return nil
+	},
+}
+
+var conversationsUnarchiveCmd = &cobra.Command{
+	Use:   "unarchive [conversation-id]",
+	Short: "Unarchive a conversation",
+	Long:  `Unarchive a previously archived conversation.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		conversationID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid conversation ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.UnarchiveConversation(conversationID); err != nil {
+			return fmt.Errorf("failed to unarchive conversation: %w", err)
+		}
+
+		fmt.Printf("Conversation %d unarchived successfully\n", conversationID)
+		return nil
+	},
+}
+
+var conversationsMuteCmd = &cobra.Command{
+	Use:   "mute [conversation-id]",
+	Short: "Mute a conversation",
+	Long:  `Mute notifications from a conversation.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		conversationID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid conversation ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.MuteConversation(conversationID); err != nil {
+			return fmt.Errorf("failed to mute conversation: %w", err)
+		}
+
+		fmt.Printf("Conversation %d muted successfully\n", conversationID)
+		return nil
+	},
+}
+
+var conversationsUnmuteCmd = &cobra.Command{
+	Use:   "unmute [conversation-id]",
+	Short: "Unmute a conversation",
+	Long:  `Unmute notifications from a conversation.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		conversationID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid conversation ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.UnmuteConversation(conversationID); err != nil {
+			return fmt.Errorf("failed to unmute conversation: %w", err)
+		}
+
+		fmt.Printf("Conversation %d unmuted successfully\n", conversationID)
+		return nil
+	},
+}
+
+var conversationsMarkReadCmd = &cobra.Command{
+	Use:   "mark-read [conversation-id]",
+	Short: "Mark a conversation as read",
+	Long:  `Mark all messages in a conversation as read.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		conversationID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid conversation ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.MarkConversationRead(conversationID); err != nil {
+			return fmt.Errorf("failed to mark conversation as read: %w", err)
+		}
+
+		fmt.Printf("Conversation %d marked as read\n", conversationID)
+		return nil
+	},
+}
+
+var conversationsMarkUnreadCmd = &cobra.Command{
+	Use:   "mark-unread [conversation-id]",
+	Short: "Mark a conversation as unread",
+	Long:  `Mark a conversation as unread.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		conversationID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid conversation ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.MarkConversationUnread(conversationID); err != nil {
+			return fmt.Errorf("failed to mark conversation as unread: %w", err)
+		}
+
+		fmt.Printf("Conversation %d marked as unread\n", conversationID)
+		return nil
+	},
+}
+
 func init() {
 	conversationsCmd.AddCommand(conversationsListCmd)
 	conversationsCmd.AddCommand(conversationsShowCmd)
 	conversationsCmd.AddCommand(conversationsSendCmd)
+	conversationsCmd.AddCommand(conversationsArchiveCmd)
+	conversationsCmd.AddCommand(conversationsUnarchiveCmd)
+	conversationsCmd.AddCommand(conversationsMuteCmd)
+	conversationsCmd.AddCommand(conversationsUnmuteCmd)
+	conversationsCmd.AddCommand(conversationsMarkReadCmd)
+	conversationsCmd.AddCommand(conversationsMarkUnreadCmd)
 }
