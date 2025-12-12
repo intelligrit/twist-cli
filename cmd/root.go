@@ -17,7 +17,7 @@ var rootCmd = &cobra.Command{
 	Long: `A command line tool for interacting with the Twist API.
 Authenticate using your personal access token to manage workspaces,
 channels, and conversations.`,
-	Version: "0.1.0",
+	Version: "1.0.0",
 }
 
 func Execute() {
