@@ -15,18 +15,14 @@ type Reaction struct {
 }
 
 func (c *Client) AddReaction(objectType string, objectID int, emoji string) (*Reaction, error) {
-	var endpoint string
-	if objectType == "thread" {
-		endpoint = "/reactions/add"
-	} else if objectType == "comment" {
-		endpoint = "/reactions/add"
-	} else {
+	if objectType != "thread" && objectType != "comment" {
 		return nil, fmt.Errorf("invalid object type: must be 'thread' or 'comment'")
 	}
 
 	payload := map[string]interface{}{
-		objectType: objectID,
-		"emoji":    emoji,
+		"object_type": objectType,
+		"object_id":   objectID,
+		"emoji":       emoji,
 	}
 
 	jsonData, err := json.Marshal(payload)
@@ -34,7 +30,7 @@ func (c *Client) AddReaction(objectType string, objectID int, emoji string) (*Re
 		return nil, fmt.Errorf("failed to marshal data: %w", err)
 	}
 
-	url := BaseURL + endpoint
+	url := BaseURL + "/reactions/add"
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
@@ -62,18 +58,14 @@ func (c *Client) AddReaction(objectType string, objectID int, emoji string) (*Re
 }
 
 func (c *Client) RemoveReaction(objectType string, objectID int, emoji string) error {
-	var endpoint string
-	if objectType == "thread" {
-		endpoint = "/reactions/remove"
-	} else if objectType == "comment" {
-		endpoint = "/reactions/remove"
-	} else {
+	if objectType != "thread" && objectType != "comment" {
 		return fmt.Errorf("invalid object type: must be 'thread' or 'comment'")
 	}
 
 	payload := map[string]interface{}{
-		objectType: objectID,
-		"emoji":    emoji,
+		"object_type": objectType,
+		"object_id":   objectID,
+		"emoji":       emoji,
 	}
 
 	jsonData, err := json.Marshal(payload)
@@ -81,7 +73,7 @@ func (c *Client) RemoveReaction(objectType string, objectID int, emoji string) e
 		return fmt.Errorf("failed to marshal data: %w", err)
 	}
 
-	url := BaseURL + endpoint
+	url := BaseURL + "/reactions/remove"
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)

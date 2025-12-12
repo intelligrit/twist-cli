@@ -63,7 +63,7 @@ func (c *Client) GetThread(id int) (*Thread, error) {
 }
 
 func (c *Client) GetComments(threadID int) ([]Comment, error) {
-	endpoint := fmt.Sprintf("/comments/get_all?thread_id=%d", threadID)
+	endpoint := fmt.Sprintf("/comments/get?thread_id=%d", threadID)
 	body, err := c.doRequest("GET", endpoint)
 	if err != nil {
 		return nil, err

@@ -7,7 +7,7 @@ import (
 )
 
 func (c *Client) SearchThreads(workspaceID int, query string, opts map[string]interface{}) ([]Thread, error) {
-	endpoint := fmt.Sprintf("/threads/search?workspace_id=%d&query=%s", workspaceID, url.QueryEscape(query))
+	endpoint := fmt.Sprintf("/search?workspace_id=%d&query=%s", workspaceID, url.QueryEscape(query))
 
 	if channelID, ok := opts["channel_id"].(int); ok {
 		endpoint += fmt.Sprintf("&channel_id=%d", channelID)
@@ -30,7 +30,7 @@ func (c *Client) SearchThreads(workspaceID int, query string, opts map[string]in
 }
 
 func (c *Client) SearchMessages(workspaceID int, query string, opts map[string]interface{}) ([]Comment, error) {
-	endpoint := fmt.Sprintf("/comments/search?workspace_id=%d&query=%s", workspaceID, url.QueryEscape(query))
+	endpoint := fmt.Sprintf("/search/comments?workspace_id=%d&query=%s", workspaceID, url.QueryEscape(query))
 
 	if limit, ok := opts["limit"].(int); ok {
 		endpoint += fmt.Sprintf("&limit=%d", limit)
@@ -50,7 +50,7 @@ func (c *Client) SearchMessages(workspaceID int, query string, opts map[string]i
 }
 
 func (c *Client) SearchConversations(query string, opts map[string]interface{}) ([]ConversationMessage, error) {
-	endpoint := fmt.Sprintf("/conversation_messages/search?query=%s", url.QueryEscape(query))
+	endpoint := fmt.Sprintf("/search/messages?query=%s", url.QueryEscape(query))
 
 	if limit, ok := opts["limit"].(int); ok {
 		endpoint += fmt.Sprintf("&limit=%d", limit)
