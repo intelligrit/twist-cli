@@ -32,6 +32,7 @@ func init() {
 	rootCmd.AddCommand(workspacesCmd)
 	rootCmd.AddCommand(channelsCmd)
 	rootCmd.AddCommand(threadsCmd)
+	rootCmd.AddCommand(commentsCmd)
 	rootCmd.AddCommand(conversationsCmd)
 	rootCmd.AddCommand(usersCmd)
 }

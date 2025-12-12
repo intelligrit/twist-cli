@@ -16,6 +16,8 @@ import (
 var (
 	createNotifyFlag string
 	replyNotifyFlag  string
+	titleFlag        string
+	contentFlag      string
 )
 
 var threadsCmd = &cobra.Command{
@@ -223,7 +225,297 @@ var threadsCreateCmd = &cobra.Command{
 	},
 }
 
+var threadsUpdateCmd = &cobra.Command{
+	Use:   "update [thread-id]",
+	Short: "Update a thread",
+	Long:  `Update thread title and/or content. Use flags to specify what to update.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		threadID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid thread ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		updates := make(map[string]interface{})
+		if titleFlag != "" {
+			updates["title"] = titleFlag
+		}
+		if contentFlag != "" {
+			updates["content"] = contentFlag
+		}
+
+		if len(updates) == 0 {
+			return fmt.Errorf("no updates specified; use --title or --content flags")
+		}
+
+		client := api.NewClient(token)
+		thread, err := client.UpdateThread(threadID, updates)
+		if err != nil {
+			return fmt.Errorf("failed to update thread: %w", err)
+		}
+
+		fmt.Printf("Thread updated successfully!\n")
+		fmt.Printf("Thread ID: %d\n", thread.ID)
+		fmt.Printf("Title: %s\n", thread.Title)
+
+		return nil
+	},
+}
+
+var threadsDeleteCmd = &cobra.Command{
+	Use:   "delete [thread-id]",
+	Short: "Delete a thread",
+	Long:  `Delete a thread permanently.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		threadID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid thread ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.DeleteThread(threadID); err != nil {
+			return fmt.Errorf("failed to delete thread: %w", err)
+		}
+
+		fmt.Printf("Thread %d deleted successfully\n", threadID)
+		return nil
+	},
+}
+
+var threadsPinCmd = &cobra.Command{
+	Use:   "pin [thread-id]",
+	Short: "Pin a thread",
+	Long:  `Pin a thread to the top of the channel.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		threadID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid thread ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.PinThread(threadID); err != nil {
+			return fmt.Errorf("failed to pin thread: %w", err)
+		}
+
+		fmt.Printf("Thread %d pinned successfully\n", threadID)
+		return nil
+	},
+}
+
+var threadsUnpinCmd = &cobra.Command{
+	Use:   "unpin [thread-id]",
+	Short: "Unpin a thread",
+	Long:  `Remove the pin from a thread.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		threadID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid thread ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.UnpinThread(threadID); err != nil {
+			return fmt.Errorf("failed to unpin thread: %w", err)
+		}
+
+		fmt.Printf("Thread %d unpinned successfully\n", threadID)
+		return nil
+	},
+}
+
+var threadsStarCmd = &cobra.Command{
+	Use:   "star [thread-id]",
+	Short: "Star a thread",
+	Long:  `Add a star to a thread for quick access.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		threadID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid thread ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.StarThread(threadID); err != nil {
+			return fmt.Errorf("failed to star thread: %w", err)
+		}
+
+		fmt.Printf("Thread %d starred successfully\n", threadID)
+		return nil
+	},
+}
+
+var threadsUnstarCmd = &cobra.Command{
+	Use:   "unstar [thread-id]",
+	Short: "Unstar a thread",
+	Long:  `Remove the star from a thread.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		threadID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid thread ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.UnstarThread(threadID); err != nil {
+			return fmt.Errorf("failed to unstar thread: %w", err)
+		}
+
+		fmt.Printf("Thread %d unstarred successfully\n", threadID)
+		return nil
+	},
+}
+
+var threadsArchiveCmd = &cobra.Command{
+	Use:   "archive [thread-id]",
+	Short: "Archive a thread",
+	Long:  `Archive a thread to hide it from active lists.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		threadID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid thread ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.ArchiveThread(threadID); err != nil {
+			return fmt.Errorf("failed to archive thread: %w", err)
+		}
+
+		fmt.Printf("Thread %d archived successfully\n", threadID)
+		return nil
+	},
+}
+
+var threadsUnarchiveCmd = &cobra.Command{
+	Use:   "unarchive [thread-id]",
+	Short: "Unarchive a thread",
+	Long:  `Unarchive a previously archived thread.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		threadID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid thread ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.UnarchiveThread(threadID); err != nil {
+			return fmt.Errorf("failed to unarchive thread: %w", err)
+		}
+
+		fmt.Printf("Thread %d unarchived successfully\n", threadID)
+		return nil
+	},
+}
+
+var commentsUpdateCmd = &cobra.Command{
+	Use:   "update [comment-id] [content...]",
+	Short: "Update a comment",
+	Long:  `Update the content of a comment.`,
+	Args:  cobra.MinimumNArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		commentID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid comment ID: %w", err)
+		}
+
+		content := strings.Join(args[1:], " ")
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		comment, err := client.UpdateComment(commentID, content)
+		if err != nil {
+			return fmt.Errorf("failed to update comment: %w", err)
+		}
+
+		fmt.Printf("Comment updated successfully!\n")
+		fmt.Printf("Comment ID: %d\n", comment.ID)
+
+		return nil
+	},
+}
+
+var commentsDeleteCmd = &cobra.Command{
+	Use:   "delete [comment-id]",
+	Short: "Delete a comment",
+	Long:  `Delete a comment permanently.`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		commentID, err := strconv.Atoi(args[0])
+		if err != nil {
+			return fmt.Errorf("invalid comment ID: %w", err)
+		}
+
+		token, err := auth.GetToken(tokenFlag)
+		if err != nil {
+			return fmt.Errorf("authentication failed: %w", err)
+		}
+
+		client := api.NewClient(token)
+		if err := client.DeleteComment(commentID); err != nil {
+			return fmt.Errorf("failed to delete comment: %w", err)
+		}
+
+		fmt.Printf("Comment %d deleted successfully\n", commentID)
+		return nil
+	},
+}
+
+var commentsCmd = &cobra.Command{
+	Use:   "comments",
+	Short: "Manage comments",
+	Long:  `Manage comments on threads.`,
+}
+
 func init() {
+	threadsUpdateCmd.Flags().StringVar(&titleFlag, "title", "", "Thread title")
+	threadsUpdateCmd.Flags().StringVar(&contentFlag, "content", "", "Thread content")
+
 	threadsCreateCmd.Flags().StringVar(&createNotifyFlag, "notify", "", "Comma-separated user IDs to notify")
 	threadsReplyCmd.Flags().StringVar(&replyNotifyFlag, "notify", "", "Comma-separated user IDs to notify")
 
@@ -231,4 +523,15 @@ func init() {
 	threadsCmd.AddCommand(threadsShowCmd)
 	threadsCmd.AddCommand(threadsReplyCmd)
 	threadsCmd.AddCommand(threadsCreateCmd)
+	threadsCmd.AddCommand(threadsUpdateCmd)
+	threadsCmd.AddCommand(threadsDeleteCmd)
+	threadsCmd.AddCommand(threadsPinCmd)
+	threadsCmd.AddCommand(threadsUnpinCmd)
+	threadsCmd.AddCommand(threadsStarCmd)
+	threadsCmd.AddCommand(threadsUnstarCmd)
+	threadsCmd.AddCommand(threadsArchiveCmd)
+	threadsCmd.AddCommand(threadsUnarchiveCmd)
+
+	commentsCmd.AddCommand(commentsUpdateCmd)
+	commentsCmd.AddCommand(commentsDeleteCmd)
 }
