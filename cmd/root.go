@@ -37,5 +37,6 @@ func init() {
 	rootCmd.AddCommand(conversationsCmd)
 	rootCmd.AddCommand(groupsCmd)
 	rootCmd.AddCommand(attachmentsCmd)
+	rootCmd.AddCommand(searchCmd)
 	rootCmd.AddCommand(usersCmd)
 }
