@@ -1,5 +1,9 @@
 # Twist CLI
 
+<p align="center">
+  <img src="logo.png" alt="twist-cli logo" width="200">
+</p>
+
 A command-line interface for interacting with the [Twist](https://twist.com) API. Manage your workspaces, channels, and conversations from your terminal.
 
 ## Features
