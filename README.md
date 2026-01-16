@@ -17,13 +17,13 @@ A command-line interface for interacting with the [Twist](https://twist.com) API
 ### From Source
 
 ```bash
-go install github.com/robertmeta/twist-cli@latest
+go install github.com/intelligrit/twist-cli@latest
 ```
 
 ### Build Locally
 
 ```bash
-git clone https://github.com/robertmeta/twist-cli.git
+git clone https://github.com/intelligrit/twist-cli.git
 cd twist-cli
 go build
 ```
