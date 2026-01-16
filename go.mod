@@ -1,4 +1,4 @@
-module github.com/robertmeta/twist-cli
+module github.com/intelligrit/twist-cli
 
 go 1.25.5
 

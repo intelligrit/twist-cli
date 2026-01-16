@@ -5,8 +5,8 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/robertmeta/twist-cli/internal/auth"
-	"github.com/robertmeta/twist-cli/pkg/api"
+	"github.com/intelligrit/twist-cli/internal/auth"
+	"github.com/intelligrit/twist-cli/pkg/api"
 	"github.com/spf13/cobra"
 )
 

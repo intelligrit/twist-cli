@@ -1,6 +1,6 @@
 package main
 
-import "github.com/robertmeta/twist-cli/cmd"
+import "github.com/intelligrit/twist-cli/cmd"
 
 func main() {
 	cmd.Execute()
